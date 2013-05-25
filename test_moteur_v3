@@ -1,0 +1,105 @@
+#include <Servo.h>
+int pospoignet = 170;
+int posbras = 170;
+Servo servopince;
+Servo servopoignet;
+Servo servobras;
+
+
+void setup()
+{
+  Serial1.begin (19200);                          // acp220
+  Serial2.begin(38400);                           // carte robotclaw  
+  servopince.attach(8);
+  servopoignet.attach(9);
+  servobras.attach(10);
+  servopince.write (90);
+  servobras.write(170);
+  servopoignet.write(170);
+}
+
+void loop()
+{
+  if(Serial1.available() > 0)                    // Vérifie si il y a quelque chose dans le buffeur de récéption
+  {
+    char valeur = Serial1.read();
+    switch(valeur)
+    {      
+      case '0':                                // Tourner à gauche
+       Serial2.write(50);
+       Serial2.write(206);
+      break;
+      
+      case'1':                                // Tourner à droite
+       Serial2.write(88);
+       Serial2.write(178);
+      break;
+      
+      case 'a':                                  // Ouvre la pince
+       servopince.write(90);
+      break;
+    
+      case 'b':                                  // Ferme la pince
+       servopince.write(120);
+      break;
+      
+      case 'c':                                  // Monte le poignet
+       if (pospoignet < 175)
+        {
+          pospoignet = pospoignet + 10;
+          servopoignet.write (pospoignet);
+        } 
+      break;
+      
+      case 'd':                                  // Descent le poignet
+       if (pospoignet > 5) 
+        {
+         pospoignet = pospoignet - 10;
+         servopoignet.write(pospoignet);
+        }
+      break;
+      
+      case 'e':                                  // Monte le bras
+       if (posbras < 175)
+       {
+        posbras = posbras + 15;
+        servobras.write(posbras);
+       }
+      break;
+      
+      case 'f':                                  // Descent le bras
+       if (posbras > 5)
+        {
+         posbras = posbras - 15;
+         servobras.write(posbras);
+        }
+        break;
+      
+      case 'g':                                // Petite vitesse avant
+       Serial2.write(84);
+       Serial2.write(212);
+      break;
+      
+      case 'h':                                // Moyenne vitesse avant
+       Serial2.write(94);
+       Serial2.write(222);
+      break;
+       
+      case 'm':                            // Stop vitesse avant et arrière
+       Serial2.write(0);
+      break;
+      
+      case 'j':                              // Petite vitesse arrière
+       Serial2.write(44);
+       Serial2.write(172);
+      break;
+      
+      case 'k':                              // Moyenne vitesse arrière
+       Serial2.write(34);
+       Serial2.write(162);
+      break;
+      
+   
+      }
+  }
+}  
